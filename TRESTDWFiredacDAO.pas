@@ -34,6 +34,7 @@ type
     destructor Destroy; override;
     procedure OpenRemote;
     procedure ApplyUpdatesRemote;
+    procedure ExecSQLRemote;
   published
     property ClientPooler: TRESTDWIdClientPooler read vClientPooler
       write SetRESTDWClientPooler;
@@ -104,6 +105,101 @@ begin
   inherited;
 end;
 
+procedure TRESTDWClientSQLFD.ExecSQLRemote;
+var
+  vBinaryWriter: TBinaryWriter;
+  vStreamAux: TMemoryStream;
+  vStringStreamAux: TStringStream;
+  vBytesAux: TArray<Byte>;
+  i, x, t, id: integer;
+  vRestParams: TRESTDWParams;
+  vErrorMessage: string;
+begin
+  try
+    try
+      vBinaryWriter := nil;
+      vStreamAux := nil;
+      vStringStreamAux := nil;
+      vRestParams := nil;
+      vErrorMessage := '';
+
+      vStreamAux := TMemoryStream.Create;
+      vBinaryWriter := TBinaryWriter.Create(vStreamAux);
+      vStringStreamAux := TStringStream.Create(SQL.Text, TEncoding.UTF8);
+
+      RebuildParams(Self.Params.Count);
+
+      vClientEvents.CreateDWParams('Query', vRestParams);
+
+      vStringStreamAux.Position := 0;
+      vRestParams.ItemsString['SQL'].LoadFromStream(vStringStreamAux);
+
+      vRestParams.ItemsString['ParamCount'].AsInteger := Self.Params.Count;
+
+      for i := 0 to Self.Params.Count - 1 do
+      begin
+        SetLength(vBytesAux, Self.Params[i].GetDataSize);
+
+        Self.Params[i].GetData(PByte(vBytesAux));
+
+        if ((Self.Params[i].IsNull = false) and
+          (VarType(Self.Params[i].value) = varString)) then
+        begin
+          t := 0;
+
+          for x := Self.Params[i].GetDataSize - 1 downto 0 do
+          begin
+            if vBytesAux[x] = 0 then
+              t := t + 1
+            else
+              break;
+          end;
+
+          SetLength(vBytesAux, Length(vBytesAux) - t);
+        end;
+
+        vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+
+        vStreamAux.Clear;
+
+        vBinaryWriter.Write(vBytesAux);
+
+        vStreamAux.Position := 0;
+
+        vRestParams.ItemsString['P' + i.ToString].LoadFromStream(vStreamAux);
+
+        vRestParams.ItemsString['F' + i.ToString].AsString :=
+          GetEnumName(Typeinfo(TFieldType), Ord(Self.Params[i].DataType));
+      end;
+
+      vRestParams.ItemsString['Type'].AsInteger := 2;
+
+      vClientEvents.SendEvent('Query', vRestParams, vErrorMessage);
+
+      if StringReplace(StringReplace(vErrorMessage, #$D#$A, '', [rfReplaceAll]), '"', '',
+        [rfReplaceAll]) = 'OK' then
+      begin
+        //
+      end
+      else
+        raise Exception.Create(vErrorMessage);
+    except
+      on e: Exception do
+      begin
+        Self.Close;
+
+        raise Exception.Create(e.Message);
+      end;
+    end;
+  finally
+    FreeAndNil(vBinaryWriter);
+    FreeAndNil(vStreamAux);
+    FreeAndNil(vStringStreamAux);
+    FreeAndNil(vRestParams);
+    Finalize(vErrorMessage);
+  end;
+end;
+
 procedure TRESTDWClientSQLFD.ApplyUpdatesRemote;
 var
   vBinaryWriter: TBinaryWriter;
@@ -171,7 +267,7 @@ begin
           GetEnumName(Typeinfo(TFieldType), Ord(Self.Params[i].DataType));
       end;
 
-      vRestParams.ItemsString['ApplyUpdates'].AsInteger := 1;
+      vRestParams.ItemsString['Type'].AsInteger := 1;
 
       vStreamAux.Clear;
 
@@ -274,6 +370,8 @@ begin
           GetEnumName(Typeinfo(TFieldType), Ord(Self.Params[i].DataType));
       end;
 
+      vRestParams.ItemsString['Type'].AsInteger := 0;
+
       vClientEvents.SendEvent('Query', vRestParams, vErrorMessage);
 
       if StringReplace(StringReplace(vErrorMessage, #$D#$A, '', [rfReplaceAll]), '"', '',
@@ -360,7 +458,7 @@ begin
     vClientEvents.Events.Items[0].Params.Items[id].Encoded := false;
 
     id := vClientEvents.Events.Items[0].Params.Add.id;
-    vClientEvents.Events.Items[0].Params.Items[id].ParamName := 'ApplyUpdates';
+    vClientEvents.Events.Items[0].Params.Items[id].ParamName := 'Type';
     vClientEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
       TObjectDirection.odINOUT;
     vClientEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovInteger;
@@ -585,7 +683,7 @@ begin
       vQueryAux.Connection := Self;
       vQueryAux.SQL.Text := vAuxStringStream.DataString;
 
-      if Params.ItemsString['ApplyUpdates'].AsBoolean = true then
+      if Params.ItemsString['Type'].AsInteger = 1 then
       begin
         vQueryAux2 := TFDQuery.Create(Self);
         vQueryAux2.Connection := Self;
@@ -619,7 +717,7 @@ begin
           if Params.ItemsString['N' + i.ToString].AsBoolean then
             vQueryAux.Params[i].Clear;
 
-          if Params.ItemsString['ApplyUpdates'].AsBoolean = true then
+          if Params.ItemsString['Type'].AsInteger = 1 then
           begin
             vQueryAux2.Params.Add;
 
@@ -641,7 +739,7 @@ begin
       if Assigned(vOnQueryAfterOpen) then
         vQueryAux.AfterOpen := vOnQueryAfterOpen;
 
-      if Params.ItemsString['ApplyUpdates'].AsBoolean = true then
+      if Params.ItemsString['Type'].AsInteger = 1 then
       begin
         vQueryAux.Close;
         vQueryAux2.Close;
@@ -666,7 +764,7 @@ begin
 
         vQueryAux.CachedUpdates := false;
       end
-      else
+      else if Params.ItemsString['Type'].AsInteger = 0 then
       begin
         vQueryAux.Open;
 
@@ -675,6 +773,12 @@ begin
         vAuxStream.Position := 0;
 
         Params.ItemsString['Stream'].LoadFromStream(vAuxStream);
+
+        vQueryAux.Close;
+      end
+      else if Params.ItemsString['Type'].AsInteger = 2 then
+      begin
+        vQueryAux.ExecSQL;
 
         vQueryAux.Close;
       end;
@@ -737,7 +841,7 @@ begin
     vServerEvents.Events.Items[0].Params.Items[2].Encoded := false;
 
     vServerEvents.Events.Items[0].Params.Add;
-    vServerEvents.Events.Items[0].Params.Items[3].ParamName := 'ApplyUpdates';
+    vServerEvents.Events.Items[0].Params.Items[3].ParamName := 'Type';
     vServerEvents.Events.Items[0].Params.Items[3].ObjectDirection :=
       TObjectDirection.odINOUT;
     vServerEvents.Events.Items[0].Params.Items[3].ObjectValue := TObjectValue.ovBoolean;
