@@ -8,12 +8,11 @@ uses
   FireDAC.Comp.DataSet,
   FireDAC.Comp.Client, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, uRESTDWMemoryDataset,
-  uRESTDWBasicTypes, uRESTDWBasicDB, uRESTDWAbout, uRESTDWServerEvents,
-  uRESTDWParams, uRESTDWBasic, uRESTDWIdBase, uRESTDWConsts, FireDAC.UI.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.UI.Intf,
   FireDAC.Comp.UI,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Phys, System.TypInfo, System.Variants,
-  uRestDWDataModule;
+  uRestDWDataModule, uRESTDWServerEvents,
+  uRESTDWParams, uRESTDWBasic, uRESTDWConsts;
 
 type
 
@@ -78,9 +77,6 @@ type
 procedure Register;
 
 implementation
-
-uses
-  FMX.Dialogs;
 
 { TRESTDWClientSQLFD }
 
