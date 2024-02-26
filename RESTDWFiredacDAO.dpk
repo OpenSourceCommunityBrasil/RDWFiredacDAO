@@ -45,8 +45,7 @@ requires
   FireDACCommonDriver,
   FireDACCommon,
   fmxFireDAC,
-  RESTDWCore,
-  RESTDWSocketIndy;
+  RESTDWCore;
 
 contains
   TRESTDWFiredacDAO in 'TRESTDWFiredacDAO.pas';

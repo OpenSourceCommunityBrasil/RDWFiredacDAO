@@ -129,7 +129,6 @@
         <DCCReference Include="FireDACCommon.dcp"/>
         <DCCReference Include="fmxFireDAC.dcp"/>
         <DCCReference Include="RESTDWCore.dcp"/>
-        <DCCReference Include="RESTDWSocketIndy.dcp"/>
         <DCCReference Include="TRESTDWFiredacDAO.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>

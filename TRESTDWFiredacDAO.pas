@@ -24,6 +24,7 @@ type
     vServerDataModuleClass: string;
     vServerConnectionComponent: string;
     vOwner: TComponent;
+    vRowsAffectedRemote: Int64;
     procedure SetRESTDWClientPooler(const value: TRESTClientPoolerBase);
     procedure SetServerConnectionComponent(const value: string);
     procedure SetServerDataModuleClass(const value: string);
@@ -35,6 +36,7 @@ type
     procedure ApplyUpdatesRemote;
     procedure ExecSQLRemote;
   published
+    property RowsAffectedRemote: Int64 read vRowsAffectedRemote;
     property ClientPooler: TRESTClientPoolerBase read vClientPooler
       write SetRESTDWClientPooler;
     property ServerDataModuleClass: string read vServerDataModuleClass
@@ -175,7 +177,7 @@ begin
       if StringReplace(StringReplace(vErrorMessage, #$D#$A, '', [rfReplaceAll]), '"', '',
         [rfReplaceAll]) = 'OK' then
       begin
-        //
+        Self.vRowsAffectedRemote := vRestParams.ItemsString['AffectedRows'].AsLargeInt;
       end
       else
         raise Exception.Create(vErrorMessage);
@@ -465,6 +467,13 @@ begin
     vClientEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
       TObjectDirection.odINOUT;
     vClientEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovInteger;
+    vClientEvents.Events.Items[0].Params.Items[id].Encoded := false;
+
+    id := vClientEvents.Events.Items[0].Params.Add.id;
+    vClientEvents.Events.Items[0].Params.Items[id].ParamName := 'AffectedRows';
+    vClientEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
+      TObjectDirection.odINOUT;
+    vClientEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovLargeint;
     vClientEvents.Events.Items[0].Params.Items[id].Encoded := false;
 
     for i := 0 to ParamCount - 1 do
@@ -776,6 +785,8 @@ begin
       begin
         vQueryAux.ExecSQL;
 
+        Params.ItemsString['AffectedRows'].AsLargeInt := vQueryAux.RowsAffected;
+
         vQueryAux.Close;
       end;
 
@@ -796,6 +807,8 @@ begin
 end;
 
 procedure TRESTDWConnectionFD.SetDriverName(const value: string);
+var
+  id: integer;
 begin
   if not(csDesigning in vOwner.ComponentState) then
   begin
@@ -815,33 +828,41 @@ begin
     vServerEvents.Events.Items[0].OnlyPreDefinedParams := false;
 
     vServerEvents.Events.Items[0].Params.Clear;
-    vServerEvents.Events.Items[0].Params.Add;
-    vServerEvents.Events.Items[0].Params.Items[0].ParamName := 'Stream';
-    vServerEvents.Events.Items[0].Params.Items[0].ObjectDirection :=
-      TObjectDirection.odINOUT;
-    vServerEvents.Events.Items[0].Params.Items[0].ObjectValue := TObjectValue.ovStream;
-    vServerEvents.Events.Items[0].Params.Items[0].Encoded := false;
 
-    vServerEvents.Events.Items[0].Params.Add;
-    vServerEvents.Events.Items[0].Params.Items[1].ParamName := 'SQL';
-    vServerEvents.Events.Items[0].Params.Items[1].ObjectDirection :=
+    id := vServerEvents.Events.Items[0].Params.Add.id;
+    vServerEvents.Events.Items[0].Params.Items[id].ParamName := 'Stream';
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
       TObjectDirection.odINOUT;
-    vServerEvents.Events.Items[0].Params.Items[1].ObjectValue := TObjectValue.ovStream;
-    vServerEvents.Events.Items[0].Params.Items[1].Encoded := false;
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovStream;
+    vServerEvents.Events.Items[0].Params.Items[id].Encoded := false;
 
-    vServerEvents.Events.Items[0].Params.Add;
-    vServerEvents.Events.Items[0].Params.Items[2].ParamName := 'ParamCount';
-    vServerEvents.Events.Items[0].Params.Items[2].ObjectDirection :=
+    id := vServerEvents.Events.Items[0].Params.Add.id;
+    vServerEvents.Events.Items[0].Params.Items[id].ParamName := 'SQL';
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
       TObjectDirection.odINOUT;
-    vServerEvents.Events.Items[0].Params.Items[2].ObjectValue := TObjectValue.ovInteger;
-    vServerEvents.Events.Items[0].Params.Items[2].Encoded := false;
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovStream;
+    vServerEvents.Events.Items[0].Params.Items[id].Encoded := false;
 
-    vServerEvents.Events.Items[0].Params.Add;
-    vServerEvents.Events.Items[0].Params.Items[3].ParamName := 'Type';
-    vServerEvents.Events.Items[0].Params.Items[3].ObjectDirection :=
+    id := vServerEvents.Events.Items[0].Params.Add.id;
+    vServerEvents.Events.Items[0].Params.Items[id].ParamName := 'Type';
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
       TObjectDirection.odINOUT;
-    vServerEvents.Events.Items[0].Params.Items[3].ObjectValue := TObjectValue.ovBoolean;
-    vServerEvents.Events.Items[0].Params.Items[3].Encoded := false;
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovInteger;
+    vServerEvents.Events.Items[0].Params.Items[id].Encoded := false;
+
+    id := vServerEvents.Events.Items[0].Params.Add.id;
+    vServerEvents.Events.Items[0].Params.Items[id].ParamName := 'ParamCount';
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
+      TObjectDirection.odINOUT;
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovInteger;
+    vServerEvents.Events.Items[0].Params.Items[id].Encoded := false;
+
+    id := vServerEvents.Events.Items[0].Params.Add.id;
+    vServerEvents.Events.Items[0].Params.Items[id].ParamName := 'AffectedRows';
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectDirection :=
+      TObjectDirection.odINOUT;
+    vServerEvents.Events.Items[0].Params.Items[id].ObjectValue := TObjectValue.ovLargeint;
+    vServerEvents.Events.Items[0].Params.Items[id].Encoded := false;
 
     vServerEvents.Events.Items[0].OnReplyEvent :=
       RESTDWServerEvents1EventsQueryReplyEvent;
