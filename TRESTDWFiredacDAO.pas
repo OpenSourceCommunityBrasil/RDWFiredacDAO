@@ -21,11 +21,11 @@ type
   TRESTDWClientSQLFD = class(TFDQuery)
   private
     vClientEvents: TRESTDWClientEvents;
-    vClientPooler: TRESTDWIdClientPooler;
+    vClientPooler: TRESTClientPoolerBase;
     vServerDataModuleClass: string;
     vServerConnectionComponent: string;
     vOwner: TComponent;
-    procedure SetRESTDWClientPooler(const value: TRESTDWIdClientPooler);
+    procedure SetRESTDWClientPooler(const value: TRESTClientPoolerBase);
     procedure SetServerConnectionComponent(const value: string);
     procedure SetServerDataModuleClass(const value: string);
     procedure RebuildParams(ParamCount: integer);
@@ -36,7 +36,7 @@ type
     procedure ApplyUpdatesRemote;
     procedure ExecSQLRemote;
   published
-    property ClientPooler: TRESTDWIdClientPooler read vClientPooler
+    property ClientPooler: TRESTClientPoolerBase read vClientPooler
       write SetRESTDWClientPooler;
     property ServerDataModuleClass: string read vServerDataModuleClass
       write SetServerDataModuleClass;
@@ -96,7 +96,7 @@ end;
 
 destructor TRESTDWClientSQLFD.Destroy;
 begin
-  if not(csDesigning in vOwner.ComponentState) then
+  if ((Assigned(vOwner) = false) or not(csDesigning in vOwner.ComponentState)) then
     FreeAndNil(vClientEvents);
 
   Finalize(vServerDataModuleClass);
@@ -433,7 +433,7 @@ procedure TRESTDWClientSQLFD.RebuildParams(ParamCount: integer);
 var
   id, i: integer;
 begin
-  if not(csDesigning in vOwner.ComponentState) then
+  if ((Assigned(vOwner) = false) or not(csDesigning in vOwner.ComponentState)) then
   begin
     vClientEvents.Events.Clear;
 
@@ -498,11 +498,11 @@ begin
   end;
 end;
 
-procedure TRESTDWClientSQLFD.SetRESTDWClientPooler(const value: TRESTDWIdClientPooler);
+procedure TRESTDWClientSQLFD.SetRESTDWClientPooler(const value: TRESTClientPoolerBase);
 begin
   vClientPooler := value;
 
-  if not(csDesigning in vOwner.ComponentState) then
+  if ((Assigned(vOwner) = false) or not(csDesigning in vOwner.ComponentState)) then
   begin
     vClientEvents := TRESTDWClientEvents.Create(Self);
 
@@ -522,7 +522,7 @@ begin
 
   vOwner := AOwner;
 
-  if not(vOwner is TServerMethodDataModule) then
+  if ((Assigned(vOwner) = false) or (not(vOwner is TServerMethodDataModule))) then
     raise Exception.Create
       ('This component should be used in TServerMethodDataModule (aka RESTDW DataModule).');
 
