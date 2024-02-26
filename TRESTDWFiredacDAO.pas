@@ -200,6 +200,7 @@ end;
 
 procedure TRESTDWClientSQLFD.ApplyUpdatesRemote;
 var
+  vAuxMemTable: TFDMemTable;
   vBinaryWriter: TBinaryWriter;
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
@@ -215,7 +216,9 @@ begin
       vStringStreamAux := nil;
       vRestParams := nil;
       vErrorMessage := '';
+      vAuxMemTable := nil;
 
+      vAuxMemTable := TFDMemTable.Create(Self);
       vStreamAux := TMemoryStream.Create;
       vBinaryWriter := TBinaryWriter.Create(vStreamAux);
       vStringStreamAux := TStringStream.Create(SQL.Text, TEncoding.UTF8);
@@ -269,7 +272,9 @@ begin
 
       vStreamAux.Clear;
 
-      Self.SaveToStream(vStreamAux, sfBinary);
+      vAuxMemTable.Data := Self.Delta;
+
+      vAuxMemTable.SaveToStream(vStreamAux, sfBinary);
 
       vStreamAux.Position := 0;
 
@@ -280,7 +285,9 @@ begin
       if StringReplace(StringReplace(vErrorMessage, #$D#$A, '', [rfReplaceAll]), '"', '',
         [rfReplaceAll]) = 'OK' then
       begin
-        //
+        Self.CommitUpdates;
+
+        Self.vRowsAffectedRemote := vRestParams.ItemsString['AffectedRows'].AsLargeInt;
       end
       else
         raise Exception.Create(vErrorMessage);
@@ -293,6 +300,7 @@ begin
       end;
     end;
   finally
+    FreeAndNil(vAuxMemTable);
     FreeAndNil(vBinaryWriter);
     FreeAndNil(vStreamAux);
     FreeAndNil(vStringStreamAux);
@@ -765,6 +773,10 @@ begin
         vQueryAux.MergeDataSet(vQueryAux2, dmDeltaMerge);
 
         vQueryAux.ApplyUpdates;
+
+        Params.ItemsString['AffectedRows'].AsLargeInt :=
+          vQueryAux2.Delta.DataView.Rows.Count;
+
         vQueryAux.CommitUpdates;
 
         vQueryAux.CachedUpdates := false;
@@ -778,6 +790,8 @@ begin
         vAuxStream.Position := 0;
 
         Params.ItemsString['Stream'].LoadFromStream(vAuxStream);
+
+        Params.ItemsString['AffectedRows'].AsLargeInt := vQueryAux.RowsAffected;
 
         vQueryAux.Close;
       end
