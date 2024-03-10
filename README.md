@@ -17,6 +17,7 @@ Vantagens em relação ao ClientSQL padrão:
 - Todas as informações trocadas são binarias, desde a coleta dos parâmetros, texto do SQL, resultados e deltas;
 
 Benchmark- FireDAC DAO x ClienSQL padrão:
+
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/c76bf8f7-d513-4c06-af14-5110cd8bdb83)
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/231c3569-3f75-4bb1-b18b-3b5c7640bf2e)
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/0f928d9e-760a-423e-b91e-d01e9ee0f907)
