@@ -29,22 +29,9 @@ package RESTDWFiredacDAO;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
-  designide,
-  vcl,
-  vclactnband,
-  vclx,
-  xmlrtl,
-  soaprtl,
-  dbrtl,
-  fmx,
-  IndySystem,
-  IndyProtocols,
-  IndyCore,
   FireDAC,
   FireDACCommonDriver,
   FireDACCommon,
-  fmxFireDAC,
   RESTDWCore;
 
 contains
