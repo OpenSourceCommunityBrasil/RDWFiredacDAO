@@ -1,6 +1,10 @@
 # RDWFiredacDAO
 Esse componente é uma simples implementação do TFDQuery para ser usado no RestDataWare.
 
+Doações para esse projeto:
+https://www.paypal.com/donate/?hosted_button_id=VVF2T2DWCKJQL
+![QR Code](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/d78c30c6-0d79-4367-8c78-577bc974d2b3)
+
 Limitações:
 - Funciona apenas com RDW 2.1 ou superior;
 - Funciona apenas em Delphi XE7 ou superior;
@@ -40,5 +44,27 @@ Utilização no SERVIDOR:
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/a3c66079-68ab-43e1-8a51-084376b9c44c)
 
   
+Utilização no CLIENT:
+- Coloque o componente RESTDWClientSQLFD no seu Form/DM;
+- Link a propriedade ClientPooler com o Client Pooler do RDW que está no seu projeto;
+- Preencha a propriedade ServerDataModuleClass com o nome da CLASSE do seu DataModule do RDW (ServerMethods) do servidor (Exemplo: TDMRestDW);
+- Preencha a propriedade ServerConnectionComponent com o nome do componente RESTDWConnectionFD que foi colocado dentro o seu DataModule do RDW (ServerMethods) do servidor (Exemplo: RESTDWConnectionFD1);
+- Aqui você pode ajustar um conexão LOCAL ao seu componente para realizar acesso DUAL; A conxão local para acesso DUAL é OPCIONAL;
+- Após tudo configurado, voce terá os seguintes comandos:
+1) RESTDWClientSQLFD.OpenRemote: Abre a query no servidor e retorna;
+2) RESTDWClientSQLFD.ExecSQLRemote: Abre o DML no servidor e retorna;
+3) RESTDWClientSQLFD.ApplyUpdatesRemote: Aplica as alterações que foram feitas localmente no servidor;
+4) RESTDWClientSQLFD.RowsAffectedRemote: Quantidade de linhas afetadas por um DML;
+- Lembrando que se uma conexão DUAL estiver configurada voce pode fazer os mesmos comandos sem o sulfixo Remote para os dados locais;
+- O componente RESTDWClientSQLFD pode ser usado como uma simples query de FireDAC, ou seja, aceitar tudo que a TFDQuery aceita;
+
+![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/ff15ee66-61c8-4f72-860d-c967454cad28)
+
+
+Migração de ClientSQL ou TFDQuery para o RESTDWClientSQLFD:
+- Abra o PAS do seu projeto, insira na uses a unit TRESTDWFiredacDAO;
+- Ainda no PAS, altere o nome de todas as classes ClientSQL ou TFDQuery para RESTDWClientSQLFD;
+- Abra o DFM e altere o nome de todas as classes ClientSQL ou TFDQuery para RESTDWClientSQLFD;
+* Lembre-se de trocar o Open por OpenRemote, ExecSQL por ExecSQLRemote, ApplyUpdates para ApplyUpdatesRemote e RowsAffected por RowsAffectedRemote para casos em que queira buscar os dados no servidor;
 
 
