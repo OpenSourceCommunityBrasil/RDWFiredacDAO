@@ -4,6 +4,7 @@ Esse componente é uma simples implementação do TFDQuery para ser usado no Res
 
 ## Doações para esse projeto:
 https://www.paypal.com/donate/?hosted_button_id=VVF2T2DWCKJQL
+
 ![QR Code](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/d78c30c6-0d79-4367-8c78-577bc974d2b3)
 
 
