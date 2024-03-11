@@ -61,8 +61,6 @@ type
     vDriverName: String;
     procedure RESTDWServerEvents1EventsQueryReplyEvent(var Params: TRESTDWParams;
       const Result: TStringList);
-    procedure RESTDWServerEvents1EventsApplyUpdatesReplyEvent(var Params: TRESTDWParams;
-      const Result: TStringList);
     procedure SetOnQueryError(const value: TOnQueryError);
     procedure SetOnQueryAfterOpen(const value: TOnQueryAfterOpen);
     procedure SetDriverName(const value: string);
@@ -109,7 +107,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t, id: integer;
+  i, x, t: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -205,7 +203,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t, id: integer;
+  i, x, t: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -315,7 +313,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t, id: integer;
+  i, x, t: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -527,8 +525,6 @@ end;
 { TRESTDWConnectionFD }
 
 constructor TRESTDWConnectionFD.Create(AOwner: TComponent);
-var
-  i: integer;
 begin
   vServerEvents := nil;
   vOwner := nil;
@@ -545,123 +541,6 @@ end;
 destructor TRESTDWConnectionFD.Destroy;
 begin
   inherited;
-end;
-
-procedure TRESTDWConnectionFD.RESTDWServerEvents1EventsApplyUpdatesReplyEvent
-  (var Params: TRESTDWParams; const Result: TStringList);
-var
-  vQueryAux, vQueryAux2: TFDQuery;
-  vAuxStream: TMemoryStream;
-  vBinaryReader: TBinaryReader;
-  vAuxParamStream: TMemoryStream;
-  vAuxStringStream: TStringStream;
-  vAuxPBytes: TArray<Byte>;
-  i: integer;
-begin
-  try
-    try
-      vQueryAux := nil;
-      vQueryAux2 := nil;
-      vAuxStream := nil;
-      vBinaryReader := nil;
-      vAuxStringStream := nil;
-      vAuxParamStream := nil;
-
-      vAuxStream := TMemoryStream.Create;
-      vAuxParamStream := TMemoryStream.Create;
-      vBinaryReader := TBinaryReader.Create(vAuxParamStream);
-      vAuxStringStream := TStringStream.Create('', TEncoding.UTF8);
-
-      Params.ItemsString['SQL'].SaveToStream(vAuxStringStream);
-      vAuxStringStream.Position := 0;
-
-      vQueryAux := TFDQuery.Create(Self);
-      vQueryAux.Connection := Self;
-      vQueryAux.SQL.Text := vAuxStringStream.DataString;
-
-      vQueryAux2 := TFDQuery.Create(Self);
-      vQueryAux2.Connection := Self;
-      vQueryAux2.SQL.Text := vAuxStringStream.DataString;
-
-      if Params.ItemsString['ParamCount'].AsInteger > 0 then
-      begin
-        for i := 0 to Params.ItemsString['ParamCount'].AsInteger - 1 do
-        begin
-          vQueryAux.Params.Add;
-          vQueryAux2.Params.Add;
-
-          vAuxParamStream.Clear;
-
-          vAuxParamStream.Position := 0;
-
-          Params.ItemsString['P' + i.ToString].SaveToStream(vAuxParamStream);
-
-          vAuxParamStream.Position := 0;
-
-          vAuxPBytes := vBinaryReader.ReadBytes(vAuxParamStream.Size);
-
-          vAuxParamStream.Position := 0;
-
-          vQueryAux.Params[i].DataType :=
-            TFieldType(GetEnumValue(Typeinfo(TFieldType),
-            Params.ItemsString['F' + i.ToString].AsString));
-
-          vQueryAux2.Params[i].DataType :=
-            TFieldType(GetEnumValue(Typeinfo(TFieldType),
-            Params.ItemsString['F' + i.ToString].AsString));
-
-          vQueryAux.Params[i].SetData(PByte(vAuxPBytes), Length(vAuxPBytes));
-
-          vQueryAux2.Params[i].SetData(PByte(vAuxPBytes), Length(vAuxPBytes));
-
-          if Params.ItemsString['N' + i.ToString].AsBoolean then
-          begin
-            vQueryAux.Params[i].Clear;
-            vQueryAux2.Params[i].Clear;
-          end;
-
-        end;
-      end;
-
-      if Assigned(vOnQueryError) then
-        vQueryAux.OnError := vOnQueryError;
-
-      if Assigned(vOnQueryAfterOpen) then
-        vQueryAux.AfterOpen := vOnQueryAfterOpen;
-
-      vQueryAux.CachedUpdates := true;
-      vQueryAux2.CachedUpdates := true;
-
-      vAuxStream.Clear;
-
-      Params.ItemsString['Stream'].SaveToStream(vAuxStream);
-
-      vAuxStream.Position := 0;
-
-      vQueryAux.Open;
-
-      vQueryAux2.LoadFromStream(vAuxStream);
-
-      vQueryAux.MergeDataSet(vQueryAux2);
-
-      vQueryAux.ApplyUpdates;
-      vQueryAux.CommitUpdates;
-
-      Result.Text := 'OK';
-    except
-      on e: Exception do
-      begin
-        Result.Text := e.Message;
-      end;
-    end
-  finally
-    FreeAndNil(vQueryAux);
-    FreeAndNil(vQueryAux2);
-    FreeAndNil(vAuxStream);
-    FreeAndNil(vBinaryReader);
-    FreeAndNil(vAuxStringStream);
-    FreeAndNil(vAuxParamStream);
-  end;
 end;
 
 procedure TRESTDWConnectionFD.RESTDWServerEvents1EventsQueryReplyEvent
