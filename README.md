@@ -75,3 +75,7 @@ Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o proje
 * Lembre-se de trocar o Open por OpenRemote, ExecSQL por ExecSQLRemote, ApplyUpdates para ApplyUpdatesRemote e RowsAffected por RowsAffectedRemote para casos em que queira buscar os dados no servidor;
 
 
+## DEMO:
+DEMO feito pelo Anderson Rocha.
+O DEMO é um projeto com Cliente e Servidor para mostrar como usar todas as funções remota do componente, incluindo os DBWares.
+O banco de dados foi montado em SQLite.
