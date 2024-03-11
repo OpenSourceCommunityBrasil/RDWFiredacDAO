@@ -46,6 +46,7 @@ Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o proje
 1) OnQueryAfterOpen: Executado sempre após uma abertura de query remota;
 2) OnQueryError: Executado sempre que uma query gera erro;
 * Esses 2 eventos servem para logar problemas de execução de query remota no servidor.
+* Apenas UM componente por banco é necessário do lado do servidor. Apenas UM componente de RESTDWConnectionFD pode atender qualquer quantidade de RESTDWClientSQLFD.
 
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/a3c66079-68ab-43e1-8a51-084376b9c44c)
 
