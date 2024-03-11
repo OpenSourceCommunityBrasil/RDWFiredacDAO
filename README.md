@@ -69,7 +69,7 @@ Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o proje
 
 
 ## Migração de ClientSQL ou TFDQuery para o RESTDWClientSQLFD:
-- Abra o PAS do seu projeto, insira na uses a unit TRESTDWFiredacDAO;
+- Abra o PAS do seu projeto, insira na uses a unit RESTDWFiredacDAO;
 - Ainda no PAS, altere o nome de todas as classes ClientSQL ou TFDQuery para RESTDWClientSQLFD;
 - Abra o DFM e altere o nome de todas as classes ClientSQL ou TFDQuery para RESTDWClientSQLFD;
 * Lembre-se de trocar o Open por OpenRemote, ExecSQL por ExecSQLRemote, ApplyUpdates para ApplyUpdatesRemote e RowsAffected por RowsAffectedRemote para casos em que queira buscar os dados no servidor;
