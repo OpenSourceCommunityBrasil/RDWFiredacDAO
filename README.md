@@ -79,3 +79,6 @@ Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o proje
 DEMO feito pelo Anderson Rocha.
 O DEMO é um projeto com Cliente e Servidor para mostrar como usar todas as funções remota do componente, incluindo os DBWares.
 O banco de dados foi montado em SQLite.
+
+![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/799a06dc-1a75-4676-9eb2-52dcb6b538fa)
+
