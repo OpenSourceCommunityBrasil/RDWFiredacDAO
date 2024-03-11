@@ -18,7 +18,7 @@ https://www.paypal.com/donate/?hosted_button_id=VVF2T2DWCKJQL
 - Faz acesso DUAL, ou seja, o mesmo componente abre uma base remota e uma base local;
 - Totalmente funcional: Indexes, Fields, Events, DBware, LiveBindings, RowsAffected,...
 - Funciona Edit, Insert, Update, Delete, Navigation, ApplyUpdates, (DBWare/LiveBindings)...
-- Pode ser executado Select (Open) ou Inser, Delete ou Update (ExecSQL) diretamente;
+- Pode ser executado Select (Open) ou Insert, Delete ou Update (ExecSQL) diretamente;
 - Aceita parâmetros;
 - Não utiliza a estrutura de PoolerDB do RestDataWare;
 - Todas as informações trocadas são binarias, desde a coleta dos parâmetros, texto do SQL, resultados e deltas;
@@ -52,7 +52,7 @@ Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o proje
 ## Utilização no CLIENT:
 - Coloque o componente RESTDWClientSQLFD no seu Form/DM;
 - Link a propriedade ClientPooler com o Client Pooler do RDW que está no seu projeto;
-- Preencha a propriedade ServerDataModuleClass com o nome da CLASSE do seu DataModule do RDW (ServerMethods) do servidor (Exemplo: TDMRestDW);
+- Preencha a propriedade ServerDataModuleClass com o nome da CLASSE do seu DataModule do RDW (ServerMethods) do servidor (Exemplo: TDataModule1);
 - Preencha a propriedade ServerConnectionComponent com o nome do componente RESTDWConnectionFD que foi colocado dentro o seu DataModule do RDW (ServerMethods) do servidor (Exemplo: RESTDWConnectionFD1);
 - Aqui você pode ajustar um conexão LOCAL ao seu componente para realizar acesso DUAL; A conxão local para acesso DUAL é OPCIONAL;
 - Após tudo configurado, voce terá os seguintes comandos:
