@@ -35,6 +35,6 @@ requires
   RESTDWCore;
 
 contains
-  TRESTDWFiredacDAO in 'TRESTDWFiredacDAO.pas';
+  RESTDWFiredacDAO in 'RESTDWFiredacDAO.pas';
 
 end.

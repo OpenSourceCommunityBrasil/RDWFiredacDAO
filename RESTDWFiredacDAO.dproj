@@ -116,7 +116,7 @@
         <DCCReference Include="FireDACCommonDriver.dcp"/>
         <DCCReference Include="FireDACCommon.dcp"/>
         <DCCReference Include="RESTDWCore.dcp"/>
-        <DCCReference Include="TRESTDWFiredacDAO.pas"/>
+        <DCCReference Include="RESTDWFiredacDAO.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
