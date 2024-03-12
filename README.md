@@ -34,7 +34,7 @@ https://www.paypal.com/donate/?hosted_button_id=VVF2T2DWCKJQL
 
 ## Instalação:
 Em um Delphi XE7 ou superior com RDW 2.1 ou superior já instalado, abra o projeto RESTDWFiredacDAO, compile e instale;
-* Não esqueca de colocar no library path o diretório em que o código com componente foi salvo.
+* Não esqueca de colocar no library path o diretório em que o código do componente foi salvo.
 
 ![image](https://github.com/OpenSourceCommunityBrasil/RDWFiredacDAO/assets/92900717/42c4d41f-1931-475c-9e8d-127684b5953f)
 
