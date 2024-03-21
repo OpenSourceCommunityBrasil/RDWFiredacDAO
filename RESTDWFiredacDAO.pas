@@ -193,6 +193,7 @@ begin
     FreeAndNil(vStringStreamAux);
     FreeAndNil(vRestParams);
     Finalize(vErrorMessage);
+    Finalize(vBytesAux);
   end;
 end;
 
@@ -304,6 +305,7 @@ begin
     FreeAndNil(vStringStreamAux);
     FreeAndNil(vRestParams);
     Finalize(vErrorMessage);
+    Finalize(vBytesAux);
   end;
 end;
 
@@ -412,6 +414,7 @@ begin
     FreeAndNil(vStringStreamAux);
     FreeAndNil(vRestParams);
     Finalize(vErrorMessage);
+    Finalize(vBytesAux);
   end;
 end;
 
@@ -551,7 +554,7 @@ var
   vBinaryReader: TBinaryReader;
   vAuxParamStream: TMemoryStream;
   vAuxStringStream: TStringStream;
-  vAuxPBytes: TArray<Byte>;
+  vBytesAux: TArray<Byte>;
   i: integer;
 begin
   try
@@ -594,7 +597,7 @@ begin
 
           vAuxParamStream.Position := 0;
 
-          vAuxPBytes := vBinaryReader.ReadBytes(vAuxParamStream.Size);
+          vBytesAux := vBinaryReader.ReadBytes(vAuxParamStream.Size);
 
           vAuxParamStream.Position := 0;
 
@@ -604,7 +607,7 @@ begin
             TFieldType(GetEnumValue(Typeinfo(TFieldType),
             Params.ItemsString['F' + i.ToString].AsString));
 
-          vQueryAux.Params[i].SetData(PByte(vAuxPBytes), Length(vAuxPBytes));
+          vQueryAux.Params[i].SetData(PByte(vBytesAux), Length(vBytesAux));
 
           if Params.ItemsString['N' + i.ToString].AsBoolean then
             vQueryAux.Params[i].Clear;
@@ -617,7 +620,7 @@ begin
               TFieldType(GetEnumValue(Typeinfo(TFieldType),
               Params.ItemsString['F' + i.ToString].AsString));
 
-            vQueryAux2.Params[i].SetData(PByte(vAuxPBytes), Length(vAuxPBytes));
+            vQueryAux2.Params[i].SetData(PByte(vBytesAux), Length(vBytesAux));
 
             if Params.ItemsString['N' + i.ToString].AsBoolean then
               vQueryAux2.Params[i].Clear;
@@ -692,10 +695,12 @@ begin
     end
   finally
     FreeAndNil(vQueryAux);
+    FreeAndNil(vQueryAux2);
     FreeAndNil(vAuxStream);
     FreeAndNil(vBinaryReader);
     FreeAndNil(vAuxStringStream);
     FreeAndNil(vAuxParamStream);
+    Finalize(vBytesAux);
   end;
 end;
 
