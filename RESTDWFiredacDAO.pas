@@ -555,6 +555,8 @@ var
   vAuxParamStream: TMemoryStream;
   vAuxStringStream: TStringStream;
   vBytesAux: TArray<Byte>;
+  vNeedAddParam: boolean;
+  vAuxException: string;
   i: integer;
 begin
   try
@@ -565,6 +567,8 @@ begin
       vBinaryReader := nil;
       vAuxStringStream := nil;
       vAuxParamStream := nil;
+      vAuxException := '';
+      vNeedAddParam := true;
 
       vAuxStream := TMemoryStream.Create;
       vAuxParamStream := TMemoryStream.Create;
@@ -587,6 +591,9 @@ begin
 
       if Params.ItemsString['ParamCount'].AsInteger > 0 then
       begin
+        if vQueryAux.Params.Count > 0 then
+          vNeedAddParam := false;
+
         for i := 0 to Params.ItemsString['ParamCount'].AsInteger - 1 do
         begin
           vAuxParamStream.Clear;
@@ -601,7 +608,8 @@ begin
 
           vAuxParamStream.Position := 0;
 
-          vQueryAux.Params.Add;
+          if vNeedAddParam = true then
+            vQueryAux.Params.Add;
 
           vQueryAux.Params[i].DataType :=
             TFieldType(GetEnumValue(Typeinfo(TFieldType),
@@ -614,7 +622,8 @@ begin
 
           if Params.ItemsString['Type'].AsInteger = 1 then
           begin
-            vQueryAux2.Params.Add;
+            if vNeedAddParam = true then
+              vQueryAux2.Params.Add;
 
             vQueryAux2.Params[i].DataType :=
               TFieldType(GetEnumValue(Typeinfo(TFieldType),
@@ -654,7 +663,30 @@ begin
 
         vQueryAux.MergeDataSet(vQueryAux2, dmDeltaMerge);
 
-        vQueryAux.ApplyUpdates;
+        if vQueryAux.ApplyUpdates > 0 then
+        begin
+          vQueryAux.FilterChanges := [rtModified, rtInserted, rtDeleted, rtHasErrors];
+
+          vQueryAux.First;
+
+          while not(vQueryAux.Eof) do
+          begin
+            if Assigned(vQueryAux.RowError) then
+            begin
+              vAuxException := vQueryAux.RowError.Message;
+
+              Params.ItemsString['AffectedRows'].AsLargeInt := 0;
+
+              vQueryAux.CancelUpdates;
+
+              vQueryAux.CachedUpdates := false;
+
+              raise Exception.Create(vAuxException);
+            end;
+
+            vQueryAux.Next;
+          end;
+        end;
 
         Params.ItemsString['AffectedRows'].AsLargeInt :=
           vQueryAux2.Delta.DataView.Rows.Count;
@@ -700,6 +732,7 @@ begin
     FreeAndNil(vBinaryReader);
     FreeAndNil(vAuxStringStream);
     FreeAndNil(vAuxParamStream);
+    Finalize(vAuxException);
     Finalize(vBytesAux);
   end;
 end;
