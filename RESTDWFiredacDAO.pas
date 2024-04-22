@@ -757,6 +757,8 @@ begin
     vServerEvents.Events.Add;
     vServerEvents.Events.Items[0].Name := 'Query';
     vServerEvents.Events.Items[0].OnlyPreDefinedParams := false;
+    vServerEvents.Events.Items[0].Routes.All.Active := true;
+    vServerEvents.Events.Items[0].Routes.All.NeedAuthorization := true;
 
     vServerEvents.Events.Items[0].Params.Clear;
 
