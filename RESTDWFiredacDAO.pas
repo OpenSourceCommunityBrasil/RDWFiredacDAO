@@ -16,7 +16,7 @@ uses
 
 type
 
-  [ComponentPlatforms(pidAllPlatforms)]
+  [ComponentPlatforms(0)]
   TRESTDWClientSQLFD = class(TFDQuery)
   private
     vClientEvents: TRESTDWClientEvents;
@@ -51,7 +51,7 @@ type
     of object;
   TOnQueryAfterOpen = procedure(DataSet: TDataSet) of object;
 
-  [ComponentPlatforms(pidAllPlatforms)]
+  [ComponentPlatforms(0)]
   TRESTDWConnectionFD = class(TFDConnection)
   private
     vServerEvents: TRESTDWServerEvents;
