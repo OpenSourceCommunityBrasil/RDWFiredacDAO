@@ -139,7 +139,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString)) then
+          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
+        then
         begin
           t := 0;
 
@@ -238,7 +239,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString)) then
+          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
+        then
         begin
           t := 0;
 
@@ -347,7 +349,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString)) then
+          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
+        then
         begin
           t := 0;
 
