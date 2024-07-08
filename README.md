@@ -16,7 +16,7 @@ https://opencollective.com/opensourcecommunitybrasil/projects/rdwfiredacdao
 ## Limitações:
 - Funciona apenas com RDW 2.1 ou superior;
 - Funciona apenas em Delphi XE7 ou superior;
-- Funciona apenas de FireDAC para FireDAC, ou sejam FireDAC no servidor e no cliente;
+- Funciona apenas de FireDAC para FireDAC, ou seja FireDAC no servidor e no cliente;
 
 
 ## Vantagens em relação ao ClientSQL padrão:
