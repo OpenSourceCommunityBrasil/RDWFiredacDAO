@@ -25,6 +25,7 @@ type
     vServerConnectionComponent: string;
     vOwner: TComponent;
     vRowsAffectedRemote: Int64;
+    vEmptyStrToNull: Boolean;
     procedure SetRESTDWClientPooler(const value: TRESTClientPoolerBase);
     procedure SetServerConnectionComponent(const value: string);
     procedure SetServerDataModuleClass(const value: string);
@@ -36,6 +37,8 @@ type
     procedure ApplyUpdatesRemote;
     procedure ExecSQLRemote;
   published
+    property EmptyStrToNull: Boolean read vEmptyStrToNull write vEmptyStrToNull
+      default false;
     property RowsAffectedRemote: Int64 read vRowsAffectedRemote;
     property ClientPooler: TRESTClientPoolerBase read vClientPooler
       write SetRESTDWClientPooler;
@@ -84,6 +87,7 @@ constructor TRESTDWClientSQLFD.Create(AOwner: TComponent);
 begin
   vOwner := nil;
   vClientEvents := nil;
+  vEmptyStrToNull := false;
 
   vOwner := AOwner;
 
@@ -107,7 +111,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t: integer;
+  i, x, t, vStrLen: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -125,6 +129,15 @@ begin
 
       RebuildParams(Self.Params.Count);
 
+      if vEmptyStrToNull = true then
+      begin
+        vStrLen := 0;
+      end
+      else
+      begin
+        vStrLen := 1;
+      end;
+
       vClientEvents.CreateDWParams('Query', vRestParams);
 
       vStringStreamAux.Position := 0;
@@ -139,8 +152,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
-        then
+          (VarType(Self.Params[i].value) = varString) and
+          (Self.Params[i].GetDataSize > vStrLen)) then
         begin
           t := 0;
 
@@ -155,7 +168,14 @@ begin
           SetLength(vBytesAux, Length(vBytesAux) - t);
         end;
 
-        vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        if ((vEmptyStrToNull = true) and (Length(vBytesAux) = 0)) then
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := true;
+        end
+        else
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        end;
 
         vStreamAux.Clear;
 
@@ -205,7 +225,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t: integer;
+  i, x, t, vStrLen: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -225,6 +245,15 @@ begin
 
       RebuildParams(Self.Params.Count);
 
+      if vEmptyStrToNull = true then
+      begin
+        vStrLen := 0;
+      end
+      else
+      begin
+        vStrLen := 1;
+      end;
+
       vClientEvents.CreateDWParams('Query', vRestParams);
 
       vStringStreamAux.Position := 0;
@@ -239,8 +268,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
-        then
+          (VarType(Self.Params[i].value) = varString) and
+          (Self.Params[i].GetDataSize > vStrLen)) then
         begin
           t := 0;
 
@@ -255,7 +284,14 @@ begin
           SetLength(vBytesAux, Length(vBytesAux) - t);
         end;
 
-        vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        if ((vEmptyStrToNull = true) and (Length(vBytesAux) = 0)) then
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := true;
+        end
+        else
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        end;
 
         vStreamAux.Clear;
 
@@ -317,7 +353,7 @@ var
   vStreamAux: TMemoryStream;
   vStringStreamAux: TStringStream;
   vBytesAux: TArray<Byte>;
-  i, x, t: integer;
+  i, x, t, vStrLen: integer;
   vRestParams: TRESTDWParams;
   vErrorMessage: string;
 begin
@@ -335,6 +371,15 @@ begin
 
       RebuildParams(Self.Params.Count);
 
+      if vEmptyStrToNull = true then
+      begin
+        vStrLen := 0;
+      end
+      else
+      begin
+        vStrLen := 1;
+      end;
+
       vClientEvents.CreateDWParams('Query', vRestParams);
 
       vStringStreamAux.Position := 0;
@@ -349,8 +394,8 @@ begin
         Self.Params[i].GetData(PByte(vBytesAux));
 
         if ((Self.Params[i].IsNull = false) and
-          (VarType(Self.Params[i].value) = varString) and (Self.Params[i].GetDataSize > 1))
-        then
+          (VarType(Self.Params[i].value) = varString) and
+          (Self.Params[i].GetDataSize > vStrLen)) then
         begin
           t := 0;
 
@@ -365,7 +410,14 @@ begin
           SetLength(vBytesAux, Length(vBytesAux) - t);
         end;
 
-        vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        if ((vEmptyStrToNull = true) and (Length(vBytesAux) = 0)) then
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := true;
+        end
+        else
+        begin
+          vRestParams.ItemsString['N' + i.ToString].AsBoolean := Self.Params[i].IsNull;
+        end;
 
         vStreamAux.Clear;
 
@@ -558,7 +610,7 @@ var
   vAuxParamStream: TMemoryStream;
   vAuxStringStream: TStringStream;
   vBytesAux: TArray<Byte>;
-  vNeedAddParam: boolean;
+  vNeedAddParam: Boolean;
   vAuxException: string;
   i: integer;
 begin
